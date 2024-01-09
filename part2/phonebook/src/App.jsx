@@ -43,6 +43,24 @@ const App = () => {
 		});
 	};
 
+	const deleteContact = (contact) => {
+		if (window.confirm(`Delete ${contact.name} ?`)) {
+			personService
+				.deleteContact(contact.id)
+				.then((returnedPerson) => {
+					setPersons(
+						persons.filter((person) => person.id !== returnedPerson.id),
+					);
+				})
+				.catch((error) => {
+					alert(
+						`the contact '${contact.name}' was already deleted from server`,
+					);
+					setPersons(persons.filter((person) => person.id !== contact.id));
+				});
+		}
+	};
+
 	const handleNameChange = (event) => {
 		setNewName(event.target.value);
 	};
@@ -75,7 +93,10 @@ const App = () => {
 				handleNumberChange={handleNumberChange}
 			/>
 			<h3>Numbers</h3>
-			<Persons shownPersons={shownPersons} />
+			<Persons
+				shownPersons={shownPersons}
+				deleteContact={deleteContact}
+			/>
 		</>
 	);
 };
