@@ -26,14 +26,40 @@ const App = () => {
 		const names = persons.map((person) => person.name);
 
 		if (names.includes(newName)) {
-			alert(`${newName} is already added to phonebook`);
+			if (
+				window.confirm(
+					`${newName} is already added to phonebook, replace the old number with a new one?`,
+				)
+			) {
+				const person = persons.find((person) => person.name === newName);
+
+				const updatedPerson = {
+					...person,
+					number: newNumber,
+				};
+
+				personService
+					.update(person.id, updatedPerson)
+					.then((returnedPerson) => {
+						setPersons(
+							persons.map((p) =>
+								p.id !== updatedPerson.id ? p : updatedPerson,
+							),
+						);
+						setNewName("");
+						setNewNumber("");
+					})
+					.catch((error) => {
+						alert(`The contact '${person.name}' wasn't found`);
+						setPersons(persons.filter((p) => p.id !== person.id));
+					});
+			}
 			return;
 		}
 
 		const personObject = {
 			name: newName,
 			number: newNumber,
-			id: `${persons.length + 1}`,
 		};
 
 		personService.create(personObject).then((returnedPerson) => {
