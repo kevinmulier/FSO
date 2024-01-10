@@ -15,6 +15,7 @@ const App = () => {
 	const [newNumber, setNewNumber] = useState("");
 	const [search, setSearch] = useState("");
 	const [successMessage, setSuccessMessage] = useState(null);
+	const [errorMessage, setErrorMessage] = useState(null);
 
 	useEffect(() => {
 		personService
@@ -56,7 +57,10 @@ const App = () => {
 						}, 5000);
 					})
 					.catch((error) => {
-						alert(`The contact '${person.name}' wasn't found`);
+						setErrorMessage(`The contact '${person.name}' wasn't found`);
+						setTimeout(() => {
+							setErrorMessage(null);
+						}, 5000);
 						setPersons(persons.filter((p) => p.id !== person.id));
 					});
 			}
@@ -89,9 +93,12 @@ const App = () => {
 					);
 				})
 				.catch((error) => {
-					alert(
-						`the contact '${contact.name}' was already deleted from server`,
+					setErrorMessage(
+						`Information of '${contact.name}' has already been removed from server`,
 					);
+					setTimeout(() => {
+						setErrorMessage(null);
+					}, 5000);
 					setPersons(persons.filter((person) => person.id !== contact.id));
 				});
 		}
@@ -116,7 +123,14 @@ const App = () => {
 	return (
 		<>
 			<h2>Phonebook</h2>
-			<Notification message={successMessage} />
+			<Notification
+				message={successMessage}
+				className="success"
+			/>
+			<Notification
+				message={errorMessage}
+				className="error"
+			/>
 			<Filter
 				search={search}
 				onChange={handleSearchChange}
