@@ -57,7 +57,10 @@ function App() {
 			}
 
 			return selectedCountries.map((country) => (
-				<p key={country.name.common}>{country.name.common}</p>
+				<p key={country.name.common}>
+					{country.name.common}{" "}
+					<button onClick={() => setSearch(country.name.common)}>show</button>
+				</p>
 			));
 		}
 		return <p>No country found with your research</p>;
@@ -69,6 +72,7 @@ function App() {
 				find countries{" "}
 				<input
 					onChange={handleSearch}
+					value={search}
 					type="search"
 				/>
 			</p>
