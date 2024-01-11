@@ -26,18 +26,25 @@ function App() {
 		setSelectedCountries(newSelectedCountries);
 		console.log("changing selected countries", newSelectedCountries);
 
-		setWeatherInfo({});
-
 		if (newSelectedCountries.length === 1) {
-			const selectedCountry = newSelectedCountries[0];
-			axios
-				.get(
-					`https://api.openweathermap.org/data/2.5/weather?lat=${selectedCountry.capitalInfo.latlng[0]}&lon=${selectedCountry.capitalInfo.latlng[1]}&units=metric&appid=${api_key}`,
-				)
-				.then((response) => {
-					setWeatherInfo(response.data);
-					console.log("weather info", response.data);
-				});
+			if (
+				(weatherInfo &&
+					newSelectedCountries[0].altSpellings[0] !==
+						weatherInfo.sys.country) ||
+				!weatherInfo
+			) {
+				const selectedCountry = newSelectedCountries[0];
+				setWeatherInfo({});
+
+				axios
+					.get(
+						`https://api.openweathermap.org/data/2.5/weather?lat=${selectedCountry.capitalInfo.latlng[0]}&lon=${selectedCountry.capitalInfo.latlng[1]}&units=metric&appid=${api_key}`,
+					)
+					.then((response) => {
+						setWeatherInfo(response.data);
+						console.log("weather info", response.data);
+					});
+			}
 		}
 	}, [search]);
 
