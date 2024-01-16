@@ -57,7 +57,7 @@ const App = () => {
 						}, 5000);
 					})
 					.catch((error) => {
-						setErrorMessage(`The contact '${person.name}' wasn't found`);
+						setErrorMessage(error.response.data.error);
 						setTimeout(() => {
 							setErrorMessage(null);
 						}, 5000);
@@ -72,15 +72,23 @@ const App = () => {
 			number: newNumber,
 		};
 
-		personService.create(personObject).then((returnedPerson) => {
-			setPersons(persons.concat(returnedPerson));
-			setNewName("");
-			setNewNumber("");
-			setSuccessMessage(`Added ${returnedPerson.name}`);
-			setTimeout(() => {
-				setSuccessMessage(null);
-			}, 5000);
-		});
+		personService
+			.create(personObject)
+			.then((returnedPerson) => {
+				setPersons(persons.concat(returnedPerson));
+				setNewName("");
+				setNewNumber("");
+				setSuccessMessage(`Added ${returnedPerson.name}`);
+				setTimeout(() => {
+					setSuccessMessage(null);
+				}, 5000);
+			})
+			.catch((error) => {
+				setErrorMessage(error.response.data.error);
+				setTimeout(() => {
+					setErrorMessage(null);
+				}, 5000);
+			});
 	};
 
 	const deleteContact = (contact) => {
@@ -91,9 +99,7 @@ const App = () => {
 					setPersons(persons.filter((person) => person.id !== contact.id));
 				})
 				.catch((error) => {
-					setErrorMessage(
-						`Information of '${contact.name}' has already been removed from server`,
-					);
+					setErrorMessage(error.response.data.error);
 					setTimeout(() => {
 						setErrorMessage(null);
 					}, 5000);
