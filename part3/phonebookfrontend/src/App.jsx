@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-
-import axios from "axios";
-
 import personService from "./services/persons";
 
 import Filter from "./components/Filter";
@@ -43,7 +40,7 @@ const App = () => {
 
 				personService
 					.update(person.id, updatedPerson)
-					.then((returnedPerson) => {
+					.then(() => {
 						setPersons(
 							persons.map((p) =>
 								p.id !== updatedPerson.id ? p : updatedPerson,
@@ -94,7 +91,7 @@ const App = () => {
 		if (window.confirm(`Delete ${contact.name} ?`)) {
 			personService
 				.deleteContact(contact.id)
-				.then((response) => {
+				.then(() => {
 					setPersons(persons.filter((person) => person.id !== contact.id));
 				})
 				.catch((error) => {

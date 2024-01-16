@@ -8,6 +8,8 @@
 		"dev": "nodemon index.js",
 		"build:ui": "rm -rf dist && cd ../phonebookfrontend && npm run build && cp -r dist ../phonebookbackend",
 		"deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "Kevin Mulier",
@@ -20,6 +22,9 @@
 		"morgan": "^1.10.0"
 	},
 	"devDependencies": {
+		"eslint": "^8.56.0",
+		"eslint-config-airbnb-base": "^15.0.0",
+		"eslint-plugin-import": "^2.29.1",
 		"nodemon": "^3.0.2"
 	}
 }
