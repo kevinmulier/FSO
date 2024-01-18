@@ -40,9 +40,29 @@ const mostBlogs = (blogs) => {
     : {};
 };
 
+const mostLikes = (blogs) => {
+  const authors = {};
+  for (let blog of blogs) {
+    authors[blog.author]
+      ? (authors[blog.author] += blog.likes)
+      : (authors[blog.author] = 0 + blog.likes);
+    console.log(authors);
+  }
+
+  const authorWithMostLikes = _.sortBy(_.toPairs(authors), 1).reverse();
+
+  return authorWithMostLikes.length > 0
+    ? {
+        author: authorWithMostLikes[0][0],
+        likes: authorWithMostLikes[0][1],
+      }
+    : {};
+};
+
 module.exports = {
   dummy,
   totalLikes,
   blogWithMostLikes,
   mostBlogs,
+  mostLikes,
 };
