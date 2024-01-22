@@ -33,6 +33,33 @@ test('all blogs are returned', async () => {
   expect(response.body).toHaveLength(blogs.length);
 });
 
+test('unique identifier for blog is id property', async () => {
+  const response = await api.get('/api/blogs');
+
+  expect(response.body[0].id).toBeDefined();
+});
+
+test('new blog get saved', async () => {
+  const newBlog = {
+    title: 'new blog',
+    author: 'Stringer',
+    url: 'Stringy',
+    likes: 0,
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogsAtEnd = await api.get('/api/blogs');
+  expect(blogsAtEnd.body).toHaveLength(blogs.length + 1);
+
+  const titles = blogsAtEnd.body.map((r) => r.title);
+  expect(titles).toContain('new blog');
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
