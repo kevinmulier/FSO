@@ -76,6 +76,32 @@ test('new blog without likes property still get 0 in likes property', async () =
   expect(savedBlog.body.likes).toBe(0);
 });
 
+test("new blog without title property doesn't get saved", async () => {
+  const newBlog = {
+    author: 'Stringer',
+    url: 'Stringy',
+    likes: 0,
+  };
+
+  await api.post('/api/blogs').send(newBlog).expect(400);
+
+  const blogsAtEnd = await api.get('/api/blogs');
+  expect(blogsAtEnd.body).toHaveLength(blogs.length);
+});
+
+test("new blog without url property doesn't get saved", async () => {
+  const newBlog = {
+    title: 'new blog',
+    author: 'Stringer',
+    likes: 0,
+  };
+
+  await api.post('/api/blogs').send(newBlog).expect(400);
+
+  const blogsAtEnd = await api.get('/api/blogs');
+  expect(blogsAtEnd.body).toHaveLength(blogs.length);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
