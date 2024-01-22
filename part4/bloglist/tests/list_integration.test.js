@@ -60,6 +60,22 @@ test('new blog get saved', async () => {
   expect(titles).toContain('new blog');
 });
 
+test('new blog without likes property still get 0 in likes property', async () => {
+  const newBlog = {
+    title: 'new blog',
+    author: 'Stringer',
+    url: 'Stringy',
+  };
+
+  const savedBlog = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  expect(savedBlog.body.likes).toBe(0);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
