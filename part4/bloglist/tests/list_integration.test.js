@@ -121,6 +121,29 @@ describe('when deleting a blog', () => {
   });
 });
 
+describe("when updating a blog's likes", () => {
+  test("blog's likes get updated but remaining properties doesn't change", async () => {
+    const blogsAtStart = await api.get('/api/blogs');
+    const blogToUpdate = blogsAtStart.body[0];
+
+    const updatedBlog = {
+      likes: blogToUpdate.likes + 1,
+    };
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAtEnd = await api.get('/api/blogs');
+
+    expect(blogsAtEnd.body[0].likes).toBe(blogToUpdate.likes + 1);
+    expect(blogsAtEnd.body[0].author).toBe(blogToUpdate.author);
+    expect(blogsAtEnd.body[0].url).toBe(blogToUpdate.url);
+    expect(blogsAtEnd.body[0].title).toBe(blogToUpdate.title);
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
