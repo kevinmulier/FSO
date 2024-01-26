@@ -202,7 +202,7 @@ describe('when there is initially one user in db', () => {
     const usersAtStart = await testHelper.usersInDb();
 
     const newUser = {
-      username: 'ad',
+      username: 'ke',
       name: 'Kevin Mulier',
       password: '123456789',
     };
@@ -221,7 +221,7 @@ describe('when there is initially one user in db', () => {
     const usersAtStart = await testHelper.usersInDb();
 
     const newUser = {
-      username: 'admin',
+      username: 'kevinm',
       name: 'Kevin Mulier',
       password: '12',
     };
