@@ -45,6 +45,23 @@ describe('when there is initially some notes saved', () => {
 });
 
 describe('when adding a new blog', () => {
+  let token = '';
+
+  beforeAll(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash('sekret', 10);
+    const user = new User({ username: 'root', name: 'rootname', passwordHash });
+
+    await user.save();
+
+    const response = await api
+      .post('/api/login')
+      .send({ username: 'root', password: 'sekret' });
+
+    token = response.body.token;
+  });
+
   test('new blog get saved', async () => {
     const newBlog = {
       title: 'new blog',
@@ -55,6 +72,7 @@ describe('when adding a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -66,6 +84,27 @@ describe('when adding a new blog', () => {
     expect(titles).toContain('new blog');
   });
 
+  test('it returns a status 401 if token is not provided', async () => {
+    const newBlog = {
+      title: 'new blog',
+      author: 'Stringer',
+      url: 'Stringy',
+      likes: 0,
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAtEnd = await api.get('/api/blogs');
+    expect(blogsAtEnd.body).toHaveLength(blogs.length);
+
+    const titles = blogsAtEnd.body.map((r) => r.title);
+    expect(titles).not.toContain('new blog');
+  });
+
   test('new blog without likes property still get 0 in likes property', async () => {
     const newBlog = {
       title: 'new blog',
@@ -75,6 +114,7 @@ describe('when adding a new blog', () => {
 
     const savedBlog = await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -89,7 +129,11 @@ describe('when adding a new blog', () => {
       likes: 0,
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
 
     const blogsAtEnd = await api.get('/api/blogs');
     expect(blogsAtEnd.body).toHaveLength(blogs.length);
@@ -102,7 +146,11 @@ describe('when adding a new blog', () => {
       likes: 0,
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
 
     const blogsAtEnd = await api.get('/api/blogs');
     expect(blogsAtEnd.body).toHaveLength(blogs.length);
@@ -110,11 +158,34 @@ describe('when adding a new blog', () => {
 });
 
 describe('when deleting a blog', () => {
+  let token = '';
+  let user = null;
+
+  beforeAll(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash('sekret', 10);
+    user = new User({ username: 'root', name: 'rootname', passwordHash });
+
+    await user.save();
+
+    const response = await api
+      .post('/api/login')
+      .send({ username: 'root', password: 'sekret' });
+
+    token = response.body.token;
+  });
+
   test('it succeeds with status code 204 if id is valid', async () => {
     const blogsAtStart = await api.get('/api/blogs');
-    const blogToDelete = blogsAtStart.body[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const blogToDelete = blogsAtStart.body[0];
+    await Blog.findByIdAndUpdate(blogToDelete.id, { user: user._id });
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
 
     const blogsAtEnd = await api.get('/api/blogs');
     expect(blogsAtEnd.body).toHaveLength(blogsAtStart.body.length - 1);
