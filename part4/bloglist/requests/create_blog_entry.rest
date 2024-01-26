@@ -3,7 +3,7 @@ Content-Type: application/json
 # Authorization: Bearer + token
 
 {
-  "title": "Blog test 4",
+  "title": "Blog test 5",
   "author": "Author test",
   "url": "url.test",
   "likes": 0
