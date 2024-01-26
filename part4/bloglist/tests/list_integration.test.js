@@ -1,11 +1,14 @@
+const bcrypt = require('bcrypt');
 const supertest = require('supertest');
 const mongoose = require('mongoose');
-const listHelper = require('../utils/list_helper');
+const listHelper = require('./list_helper');
+const testHelper = require('./test_helper');
 const app = require('../app');
 
 const api = supertest(app);
 
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 const emptyList = listHelper.emptyList;
 const listWithOneBlog = listHelper.listWithOneBlog;
@@ -141,6 +144,96 @@ describe("when updating a blog's likes", () => {
     expect(blogsAtEnd.body[0].author).toBe(blogToUpdate.author);
     expect(blogsAtEnd.body[0].url).toBe(blogToUpdate.url);
     expect(blogsAtEnd.body[0].title).toBe(blogToUpdate.title);
+  });
+});
+
+describe('when there is initially one user in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash('sekret', 10);
+    const user = new User({ username: 'admin', passwordHash });
+
+    await user.save();
+  });
+
+  test('creation succeeds with a new username', async () => {
+    const usersAtStart = await testHelper.usersInDb();
+
+    const newUser = {
+      username: 'kevinm',
+      name: 'Kevin Mulier',
+      password: '123456789',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const usersAtEnd = await testHelper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
+
+    const usernames = usersAtEnd.map((u) => u.username);
+    expect(usernames).toContain(newUser.username);
+  });
+
+  test('creation fails with a username that is not unique', async () => {
+    const usersAtStart = await testHelper.usersInDb();
+
+    const newUser = {
+      username: 'admin',
+      name: 'Kevin Mulier',
+      password: '123456789',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    const usersAtEnd = await testHelper.usersInDb();
+    expect(usersAtEnd).toEqual(usersAtStart);
+  });
+
+  test('creation fails with a username too short', async () => {
+    const usersAtStart = await testHelper.usersInDb();
+
+    const newUser = {
+      username: 'ad',
+      name: 'Kevin Mulier',
+      password: '123456789',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    const usersAtEnd = await testHelper.usersInDb();
+    expect(usersAtEnd).toEqual(usersAtStart);
+  });
+
+  test('creation fails with a password too short', async () => {
+    const usersAtStart = await testHelper.usersInDb();
+
+    const newUser = {
+      username: 'admin',
+      name: 'Kevin Mulier',
+      password: '12',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    const usersAtEnd = await testHelper.usersInDb();
+    expect(usersAtEnd).toEqual(usersAtStart);
   });
 });
 

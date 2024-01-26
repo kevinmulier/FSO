@@ -1,4 +1,4 @@
-const listHelper = require('../utils/list_helper');
+const listHelper = require('./list_helper');
 
 const emptyList = listHelper.emptyList;
 const listWithOneBlog = listHelper.listWithOneBlog;
