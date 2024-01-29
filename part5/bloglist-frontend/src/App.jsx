@@ -5,6 +5,7 @@ import LoginForm from './components/loginForm';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import BlogForm from './components/BlogForm';
+import Notification from './components/Notification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -12,6 +13,8 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -41,8 +44,17 @@ const App = () => {
       const response = await blogService.create(blogObject);
       setBlogs(blogs.concat(response));
       setNewBlog({ title: '', author: '', url: '' });
+      setSuccessMessage(
+        `${newBlog.title} by ${newBlog.author} added successfully`,
+      );
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
     } catch (exception) {
-      window.alert(exception.response.data.error);
+      setErrorMessage(exception.response.data.error);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
     }
   };
 
@@ -78,8 +90,15 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
+      setSuccessMessage('Successfully logged in!');
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
     } catch (exception) {
-      window.alert(exception.response.data.error);
+      setErrorMessage(exception.response.data.error);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
     }
   };
 
@@ -87,8 +106,15 @@ const App = () => {
     try {
       window.localStorage.removeItem('loggedUserJSON');
       setUser(null);
+      setSuccessMessage('Successfully logged out!');
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
     } catch (exception) {
-      window.alert('Logout failed');
+      setErrorMessage('Logout failed');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
     }
   };
 
@@ -96,6 +122,18 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        {successMessage && (
+          <Notification
+            message={successMessage}
+            type={'success-notification'}
+          />
+        )}
+        {errorMessage && (
+          <Notification
+            message={errorMessage}
+            type={'error-notification'}
+          />
+        )}
         <LoginForm
           handleLogin={handleLogin}
           username={username}
@@ -110,6 +148,18 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      {successMessage && (
+        <Notification
+          message={successMessage}
+          type={'success-notification'}
+        />
+      )}
+      {errorMessage && (
+        <Notification
+          message={errorMessage}
+          type={'error-notification'}
+        />
+      )}
       <p>
         {user.username} logged in{' '}
         <button onClick={handleLogout}>Log out</button>
