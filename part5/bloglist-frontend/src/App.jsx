@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
-import LoginForm from './components/loginForm';
+import LoginForm from './components/LoginForm';
 
 import blogService from './services/blogs';
 import loginService from './services/login';
 import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
+import Togglable from './components/Togglable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -42,6 +43,7 @@ const App = () => {
 
     try {
       const response = await blogService.create(blogObject);
+      blogFormRef.current.toggleVisibility();
       setBlogs(blogs.concat(response));
       setNewBlog({ title: '', author: '', url: '' });
       setSuccessMessage(
@@ -118,6 +120,24 @@ const App = () => {
     }
   };
 
+  const blogFormRef = useRef();
+
+  const blogForm = () => {
+    return (
+      <Togglable
+        buttonLabel={'new blog'}
+        ref={blogFormRef}>
+        <BlogForm
+          addBlog={addBlog}
+          newBlog={newBlog}
+          handleTitleChange={handleTitleChange}
+          handleAuthorChange={handleAuthorChange}
+          handleUrlChange={handleUrlChange}
+        />
+      </Togglable>
+    );
+  };
+
   if (user === null) {
     return (
       <div>
@@ -164,14 +184,7 @@ const App = () => {
         {user.username} logged in{' '}
         <button onClick={handleLogout}>Log out</button>
       </p>
-      <h3>create new</h3>
-      <BlogForm
-        addBlog={addBlog}
-        newBlog={newBlog}
-        handleTitleChange={handleTitleChange}
-        handleAuthorChange={handleAuthorChange}
-        handleUrlChange={handleUrlChange}
-      />
+      {blogForm()}
       {blogs.map((blog) => (
         <Blog
           key={blog.id}
