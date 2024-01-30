@@ -10,7 +10,6 @@ import Togglable from './components/Togglable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' });
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -32,22 +31,13 @@ const App = () => {
     }
   }, []);
 
-  const addBlog = async (event) => {
-    event.preventDefault();
-
-    const blogObject = {
-      title: newBlog.title,
-      author: newBlog.author,
-      url: newBlog.url,
-    };
-
+  const addBlog = async (blogObject) => {
     try {
       const response = await blogService.create(blogObject);
       blogFormRef.current.toggleVisibility();
       setBlogs(blogs.concat(response));
-      setNewBlog({ title: '', author: '', url: '' });
       setSuccessMessage(
-        `${newBlog.title} by ${newBlog.author} added successfully`,
+        `${blogObject.title} by ${blogObject.author} added successfully`,
       );
       setTimeout(() => {
         setSuccessMessage(null);
@@ -58,27 +48,6 @@ const App = () => {
         setErrorMessage(null);
       }, 5000);
     }
-  };
-
-  const handleTitleChange = (event) => {
-    setNewBlog((c) => ({
-      ...newBlog,
-      title: event.target.value,
-    }));
-  };
-
-  const handleAuthorChange = (event) => {
-    setNewBlog((c) => ({
-      ...newBlog,
-      author: event.target.value,
-    }));
-  };
-
-  const handleUrlChange = (event) => {
-    setNewBlog((c) => ({
-      ...newBlog,
-      url: event.target.value,
-    }));
   };
 
   const handleLogin = async (event) => {
@@ -127,13 +96,7 @@ const App = () => {
       <Togglable
         buttonLabel={'new blog'}
         ref={blogFormRef}>
-        <BlogForm
-          addBlog={addBlog}
-          newBlog={newBlog}
-          handleTitleChange={handleTitleChange}
-          handleAuthorChange={handleAuthorChange}
-          handleUrlChange={handleUrlChange}
-        />
+        <BlogForm createBlog={addBlog} />
       </Togglable>
     );
   };
