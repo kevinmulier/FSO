@@ -152,6 +152,8 @@ const App = () => {
         <Blog
           key={blog.id}
           blog={blog}
+          setSuccessMessage={setSuccessMessage}
+          setErrorMessage={setErrorMessage}
         />
       ))}
     </div>

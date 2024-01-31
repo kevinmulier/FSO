@@ -1,0 +1,16 @@
+PUT http://localhost:3003/api/blogs/65b3e52581587d4e1e23eb52
+Content-Type: application/json
+# Authorization: Bearer + token
+
+{
+  "title": "Blog test 2",
+  "author": "Author test",
+  "url": "url.test",
+  "likes": 29,
+  "user": {
+    "username": "kevin",
+    "name": "adminkevin",
+    "id": "65b3d17380fe9bfcc7cfe177"
+  },
+  "id": "65b3e52581587d4e1e23eb52"
+}
