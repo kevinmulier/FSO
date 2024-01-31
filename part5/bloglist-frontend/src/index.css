@@ -197,3 +197,11 @@ th {
 .blog-container p {
   margin: 1px 0;
 }
+
+.error-button {
+  padding: 5px;
+  background-color: rgb(146, 55, 55);
+  border-radius: 5px;
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+}
