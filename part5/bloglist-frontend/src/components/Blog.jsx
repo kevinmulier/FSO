@@ -12,11 +12,11 @@ const Blog = ({ blog, user, setSuccessMessage, setErrorMessage, setBlogs }) => {
         ...blog,
         likes: blog.likes + 1,
       });
-      blog.likes = response.likes;
-      setSuccessMessage(`${blog.title}'s liked successfully`);
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
+      setBlogs((prevBlogs) => {
+        return prevBlogs.map((b) =>
+          b.id === blog.id ? { ...b, likes: response.likes } : b,
+        );
+      });
     } catch (exception) {
       setErrorMessage(exception.response.data.error);
       setTimeout(() => {
