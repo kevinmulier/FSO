@@ -1,32 +1,17 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import Togglable from './Togglable';
 
 import blogService from '../services/blogs';
 
-const Blog = ({ blog, user, setSuccessMessage, setErrorMessage, setBlogs }) => {
-  const [visibleInfos, setVisibleInfos] = useState(false);
-
-  const toggleVisibility = () => setVisibleInfos(!visibleInfos);
-
-  const increaseLikes = async () => {
-    try {
-      const response = await blogService.update({
-        ...blog,
-        likes: blog.likes + 1,
-      });
-      setBlogs((prevBlogs) => {
-        return prevBlogs.map((b) =>
-          b.id === blog.id ? { ...b, likes: response.likes } : b,
-        );
-      });
-    } catch (exception) {
-      setErrorMessage(exception.response.data.error);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-    }
-  };
-
+const Blog = ({
+  blog,
+  user,
+  setSuccessMessage,
+  setErrorMessage,
+  setBlogs,
+  increaseLikes,
+}) => {
   const deleteBlog = async () => {
     try {
       if (window.confirm(`Remove blog ${blog.title} by ${blog.author} ?`)) {
@@ -48,14 +33,14 @@ const Blog = ({ blog, user, setSuccessMessage, setErrorMessage, setBlogs }) => {
   return (
     <div className="blog-container">
       {blog.title} - {blog.author}{' '}
-      <button onClick={toggleVisibility}>
-        {visibleInfos ? 'hide' : 'show'}
-      </button>
-      {visibleInfos && (
+      <Togglable
+        buttonLabel="show"
+        hideLabel="hide">
         <div>
           <p>{blog.url}</p>
           <p>
-            likes {blog.likes} <button onClick={increaseLikes}>like</button>
+            likes {blog.likes}{' '}
+            <button onClick={() => increaseLikes(blog)}>like</button>
           </p>
           <p>{blog.user.username}</p>
           {user.username === blog.user.username && (
@@ -66,7 +51,7 @@ const Blog = ({ blog, user, setSuccessMessage, setErrorMessage, setBlogs }) => {
             </button>
           )}
         </div>
-      )}
+      </Togglable>
     </div>
   );
 };
@@ -77,6 +62,7 @@ Blog.propTypes = {
   setSuccessMessage: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,
   setBlogs: PropTypes.func.isRequired,
+  increaseLikes: PropTypes.func.isRequired,
 };
 
 export default Blog;

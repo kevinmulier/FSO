@@ -50,6 +50,25 @@ const App = () => {
     }
   };
 
+  const increaseLikes = async (blog) => {
+    try {
+      const response = await blogService.update({
+        ...blog,
+        likes: blog.likes + 1,
+      });
+      setBlogs((prevBlogs) => {
+        return prevBlogs.map((b) =>
+          b.id === blog.id ? { ...b, likes: response.likes } : b,
+        );
+      });
+    } catch (exception) {
+      setErrorMessage(exception.response.data.error);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -156,6 +175,7 @@ const App = () => {
           setSuccessMessage={setSuccessMessage}
           setErrorMessage={setErrorMessage}
           setBlogs={setBlogs}
+          increaseLikes={increaseLikes}
         />
       ))}
     </div>
