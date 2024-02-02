@@ -26,7 +26,7 @@ describe('<Blog />', () => {
   };
 
   beforeEach(() => {
-    render(
+    container = render(
       <Blog
         blog={blog}
         user={user}
@@ -42,7 +42,31 @@ describe('<Blog />', () => {
     await screen.findByText('Blog testing', { exact: false });
   });
 
-  test('do not render url and likes initially', async () => {
+  test('do not render url and likes initially', () => {
+    const likes = screen.queryByText('likes 5', { exact: false });
+    const url = screen.queryByText('Test URL', { exact: false });
+
+    expect(likes).toBeNull();
+    expect(url).toBeNull();
+  });
+
+  test('render url and likes after clicking show details button', async () => {
+    const user = userEvent.setup();
+
+    const button = screen.getByText('show');
+    await user.click(button);
+
+    await screen.findByText('likes 5', { exact: false });
+    await screen.findByText('Test URL', { exact: false });
+  });
+
+  test('do not render url and likes after clicking show details button twice', async () => {
+    const user = userEvent.setup();
+    const button = screen.getByText('show');
+
+    await user.click(button);
+    await user.click(button);
+
     const likes = screen.queryByText('likes 5', { exact: false });
     const url = screen.queryByText('Test URL', { exact: false });
 
