@@ -62,21 +62,31 @@ describe('Blog app', () => {
       cy.contains('A new blog author');
     });
 
-    describe('and a blog exists', function () {
+    describe('and blogs exist', function () {
       beforeEach(function () {
         cy.createBlog({
           title: 'Another blog',
           author: 'Another author',
           url: 'Another url',
         });
+        cy.createBlog({
+          title: 'This is a blog 2',
+          author: 'This is an author 2',
+          url: 'This is an url 2',
+        });
+        cy.get('.blog-container:first').as('blog-container');
+        cy.get('@blog-container').contains('show').click();
       });
 
       it('a blog can be liked', function () {
-        cy.get('.blog-container:first').as('blog-container');
-        cy.get('@blog-container').contains('show').click();
         cy.get('@blog-container').contains('likes 0');
         cy.get('@blog-container').get('.like-button').click();
         cy.get('@blog-container').contains('likes 1');
+      });
+
+      it.only('a blog can be deleted by its creator', function () {
+        cy.get('@blog-container').contains('delete blog').click();
+        cy.get('.blog-container:first').should('not.contain', 'Another blog');
       });
     });
   });
