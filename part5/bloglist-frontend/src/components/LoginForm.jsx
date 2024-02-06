@@ -15,6 +15,7 @@ const LoginForm = ({
         onChange={({ target }) => setUsername(target.value)}
         value={username}
         name="Username"
+        id="username"
       />
     </div>
     <div>
@@ -24,9 +25,14 @@ const LoginForm = ({
         onChange={({ target }) => setPassword(target.value)}
         value={password}
         name="Password"
+        id="password"
       />
     </div>
-    <button type="submit">Log in</button>
+    <button
+      type="submit"
+      id="submit-login">
+      Log in
+    </button>
   </form>
 );
 
