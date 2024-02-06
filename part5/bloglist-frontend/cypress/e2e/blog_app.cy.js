@@ -67,19 +67,40 @@ describe('Blog app', () => {
           author: 'This is an author 2',
           url: 'This is an url 2',
         });
-        cy.get('.blog-container:first').as('blog-container');
-        cy.get('@blog-container').contains('show').click();
+        cy.get('.blog-container').first().contains('show').click();
       });
 
       it('a blog can be liked', function () {
-        cy.get('@blog-container').contains('likes 0');
-        cy.get('@blog-container').get('.like-button').click();
-        cy.get('@blog-container').contains('likes 1');
+        cy.get('.blog-container').first().contains('likes 0');
+        cy.get('.blog-container').first().find('.like-button').click();
+        cy.get('.blog-container').first().contains('likes 1');
       });
 
-      it.only('a blog can be deleted by its creator', function () {
-        cy.get('@blog-container').contains('delete blog').click();
-        cy.get('.blog-container:first').should('not.contain', 'Another blog');
+      describe('a blog can', function () {
+        it('be deleted by its creator', function () {
+          cy.get('.blog-container').first().contains('delete blog').click();
+          cy.get('.blog-container')
+            .first()
+            .should('not.contain', 'Another blog');
+        });
+
+        it('not be deleted by another user', function () {
+          cy.contains('Log out').click();
+          const newUser = {
+            username: 'anotheruser',
+            name: 'Another User',
+            password: 'sekretpassword',
+          };
+
+          cy.request('POST', 'http://localhost:3003/api/users', newUser);
+          cy.login({ username: 'anotheruser', password: 'sekretpassword' });
+          cy.visit('http://localhost:5173');
+
+          cy.get('.blog-container').first().contains('show').click();
+          cy.get('.blog-container')
+            .first()
+            .should('not.contain', 'delete blog');
+        });
       });
     });
   });
