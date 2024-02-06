@@ -61,5 +61,23 @@ describe('Blog app', () => {
       cy.contains('A new test blog');
       cy.contains('A new blog author');
     });
+
+    describe('and a blog exists', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'Another blog',
+          author: 'Another author',
+          url: 'Another url',
+        });
+      });
+
+      it('a blog can be liked', function () {
+        cy.get('.blog-container:first').as('blog-container');
+        cy.get('@blog-container').contains('show').click();
+        cy.get('@blog-container').contains('likes 0');
+        cy.get('@blog-container').get('.like-button').click();
+        cy.get('@blog-container').contains('likes 1');
+      });
+    });
   });
 });
