@@ -76,6 +76,26 @@ describe('Blog app', () => {
         cy.get('.blog-container').first().contains('likes 1');
       });
 
+      it('blogs are ordered by likes', function () {
+        cy.get('.blog-container').eq(0).contains('likes 0');
+        for (let i = 1; i <= 2; i++) {
+          cy.get('.blog-container').eq(0).find('.like-button').click();
+        }
+        cy.get('.blog-container').eq(0).contains('likes 2');
+
+        cy.get('.blog-container').eq(1).contains('show').click();
+        cy.get('.blog-container').eq(1).contains('likes 0');
+        for (let i = 1; i <= 3; i++) {
+          cy.get('.blog-container').eq(1).find('.like-button').click();
+        }
+        cy.get('.blog-container').eq(1).contains('likes 3');
+
+        cy.visit('http://localhost:5173');
+
+        cy.get('.blog-container').eq(0).contains('This is a blog 2');
+        cy.get('.blog-container').eq(1).contains('Another blog');
+      });
+
       describe('a blog can', function () {
         it('be deleted by its creator', function () {
           cy.get('.blog-container').first().contains('delete blog').click();
