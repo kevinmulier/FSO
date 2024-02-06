@@ -36,4 +36,30 @@ describe('Blog app', () => {
         .should('have.css', 'background-color', 'rgb(214, 192, 190)');
     });
   });
+
+  describe('When logged in', function () {
+    beforeEach(function () {
+      cy.request('POST', 'http://localhost:3003/api/login', {
+        username: 'kevinm',
+        password: 'sekretpassword',
+      }).then((response) => {
+        localStorage.setItem('loggedUserJSON', JSON.stringify(response.body));
+      });
+
+      cy.visit('http://localhost:5173');
+    });
+
+    it('a blog can be created', function () {
+      cy.contains('new blog').click();
+
+      cy.get('#title-input').type('A new test blog');
+      cy.get('#author-input').type('A new blog author');
+      cy.get('#url-input').type('A new blog url');
+
+      cy.get('#submit-blog').click();
+
+      cy.contains('A new test blog');
+      cy.contains('A new blog author');
+    });
+  });
 });
