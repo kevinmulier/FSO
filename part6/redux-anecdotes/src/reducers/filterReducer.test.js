@@ -6,10 +6,10 @@ describe('filterReducer', () => {
     expect(filterReducer(undefined, {})).toEqual('');
   });
 
-  it('should handle SET_FILTER action', () => {
+  it('should handle filter/changeFilter', () => {
     const startState = '';
     const action = {
-      type: 'SET_FILTER',
+      type: 'filter/filterChange',
       payload: 'completed',
     };
 
@@ -23,7 +23,7 @@ describe('filterChange action creator', () => {
   it('should create an action to change the filter', () => {
     const filter = 'active';
     const expectedAction = {
-      type: 'SET_FILTER',
+      type: 'filter/filterChange',
       payload: filter,
     };
     expect(filterChange(filter)).toEqual(expectedAction);

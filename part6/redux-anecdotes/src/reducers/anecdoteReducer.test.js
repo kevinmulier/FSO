@@ -15,12 +15,10 @@ describe('anecdote reducer', () => {
     },
   ];
 
-  test('returns new state with action NEW_ANECDOTE', () => {
+  test('returns new state with action anecdotes/createAnecdote', () => {
     const action = {
-      type: 'NEW_ANECDOTE',
-      payload: {
-        content: 'Anecdote 3',
-      },
+      type: 'anecdotes/createAnecdote',
+      payload: 'Anecdote 3',
     };
 
     deepFreeze(initialState);
@@ -29,12 +27,10 @@ describe('anecdote reducer', () => {
     expect(newState).toHaveLength(3);
   });
 
-  test('returns new state with action VOTE', () => {
+  test('returns new state with action anecdotes/vote', () => {
     const action = {
-      type: 'VOTE',
-      payload: {
-        id: 1,
-      },
+      type: 'anecdotes/vote',
+      payload: 1,
     };
 
     deepFreeze(initialState);
