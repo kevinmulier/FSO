@@ -3,15 +3,18 @@ import { vote } from '../reducers/anecdoteReducer';
 
 const AnecdoteList = () => {
   const anecdotes = useSelector(({ filter, anecdotes }) => {
-    if (filter) {
-      return anecdotes
-        .filter((anecdote) =>
-          anecdote.content.toLowerCase().includes(filter.toLowerCase()),
+    const sortAnecdotes = (anecdotes) =>
+      anecdotes.sort((a, b) => b.votes - a.votes);
+
+    return filter
+      ? sortAnecdotes(
+          anecdotes.filter((anecdote) =>
+            anecdote.content.toLowerCase().includes(filter.toLowerCase()),
+          ),
         )
-        .sort((a, b) => b.votes - a.votes);
-    }
-    return anecdotes.sort((a, b) => b.votes - a.votes);
+      : sortAnecdotes([...anecdotes]);
   });
+
   const dispatch = useDispatch();
 
   const voteFor = (id) => {
