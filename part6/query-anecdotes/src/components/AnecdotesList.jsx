@@ -24,9 +24,7 @@ const AnecdotesList = ({ anecdotesReceived }) => {
     onError: (error) => {
       notificationDispatch({
         type: 'DISPLAY',
-        payload:
-          error.message ||
-          `There was an error with your request. Please try again`,
+        payload: error.response?.data?.error || error.message,
       });
 
       setTimeout(() => {
