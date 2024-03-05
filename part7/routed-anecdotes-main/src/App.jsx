@@ -1,5 +1,12 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react';
-import { BrowserRouter as Router, Link, Routes, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Link,
+  Routes,
+  Route,
+  useMatch,
+} from 'react-router-dom';
 
 const Menu = () => {
   const padding = {
@@ -25,10 +32,27 @@ const AnecdoteList = ({ anecdotes }) => (
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map((anecdote) => (
-        <li key={anecdote.id}>{anecdote.content}</li>
+        <li key={anecdote.id}>
+          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+        </li>
       ))}
     </ul>
   </div>
+);
+
+const Anecdote = ({ anecdote, vote }) => (
+  <>
+    <h3>
+      {anecdote.content} by {anecdote.author}
+    </h3>
+    <p>
+      has {anecdote.votes} votes{' '}
+      <button onClick={() => vote(anecdote.id)}>vote</button>
+    </p>
+    <p>
+      for more info see <a href={anecdote.info}>{anecdote.info}</a>
+    </p>
+  </>
 );
 
 const About = () => (
@@ -151,18 +175,22 @@ const App = () => {
     setAnecdotes(anecdotes.map((a) => (a.id === id ? voted : a)));
   };
 
+  const match = useMatch('/anecdotes/:id');
+  const anecdote = match ? anecdoteById(Number(match.params.id)) : null;
+
   return (
     <div>
-      <Router>
-        <h1>Software anecdotes</h1>
-        <Menu />
-
-        <Routes>
-          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/create" element={<CreateNew addNew={addNew} />} />
-        </Routes>
-      </Router>
+      <h1>Software anecdotes</h1>
+      <Menu />
+      <Routes>
+        <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+        <Route
+          path="/anecdotes/:id"
+          element={<Anecdote anecdote={anecdote} vote={vote} />}
+        />
+        <Route path="/about" element={<About />} />
+        <Route path="/create" element={<CreateNew addNew={addNew} />} />
+      </Routes>
       <Footer />
     </div>
   );
