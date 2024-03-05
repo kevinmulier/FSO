@@ -1,13 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Link,
-  Routes,
-  Route,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, Routes, Route, useMatch, useNavigate } from 'react-router-dom';
 
 const Menu = () => {
   const padding = {
@@ -68,7 +61,7 @@ const About = () => (
       more general than the brief tale itself, such as to characterize a person
       by delineating a specific quirk or trait, to communicate an abstract idea
       about a person, place, or thing through the concrete details of a short
-      narrative. An anecdote is "a story with a point."
+      narrative. An anecdote is &quot;a story with a point.&quot;
     </em>
 
     <p>
@@ -164,6 +157,8 @@ const App = () => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
     navigate('/');
+    setNotification(`${anecdote.content} has been created`);
+    setTimeout(() => setNotification(``), 5000);
   };
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
@@ -186,6 +181,17 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      {notification && (
+        <p
+          style={{
+            color: 'white',
+            padding: '5px',
+            border: '2px solid black',
+            backgroundColor: 'green',
+          }}>
+          {notification}
+        </p>
+      )}
       <Routes>
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route
