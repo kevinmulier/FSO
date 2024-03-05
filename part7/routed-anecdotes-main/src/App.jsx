@@ -6,6 +6,7 @@ import {
   Routes,
   Route,
   useMatch,
+  useNavigate,
 } from 'react-router-dom';
 
 const Menu = () => {
@@ -138,6 +139,8 @@ const CreateNew = (props) => {
 };
 
 const App = () => {
+  const navigate = useNavigate();
+
   const [anecdotes, setAnecdotes] = useState([
     {
       content: 'If it hurts, do it more often',
@@ -160,6 +163,7 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+    navigate('/');
   };
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
